@@ -1,0 +1,21 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5432/postgres</property>
+        <property name="connection.username">postgres</property>
+        <property name="connection.password">123456</property>
+        <property name="connection.pool_size">2</property>
+        <property name="dialect">org.hibernate.dialect.PostgreSQL95Dialect</property>
+        <property name="default_schema">products_and_customers</property>
+        <property name="show_sql">false</property>
+        <property name="hbm2ddl.auto">none</property>
+        <property name="current_session_context_class">thread</property>
+        <property name="format_sql">false</property>
+        <mapping class="ru.tronin.hibernate2.model.Customer"/>
+        <mapping class="ru.tronin.hibernate2.model.Product"/>
+    </session-factory>
+</hibernate-configuration>
