@@ -55,16 +55,11 @@ public class ProductRepository implements Idao<Product, Long>{
         }
     }
 
-    public List<Customer> getCustomersOfProductByProductId(Long id){
-        List<Customer> customers;
+    public void initializeCustomersList(Product product){
         try(Session session = sessionFactory.openSession()){
             session.getTransaction().begin();
-            Product product = session.get(Product.class, id);
             Hibernate.initialize(product.getCustomers());
-            customers = product.getCustomers();
             session.getTransaction().commit();
         }
-        return customers;
     }
-
 }

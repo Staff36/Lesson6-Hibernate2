@@ -35,9 +35,21 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Customer{" +
+        StringBuilder sb = new StringBuilder("Customer{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+                ", name='" + name + '\'');
+        if(this.products != null){
+            sb.append("Products[ ");
+            products.forEach(product -> {
+                sb.append("Product{id=" + product.getId() +
+                        ", name='" + product.getName() + '\'' +
+                        ", cost='" + product.getCost() + "\'}");
+            });
+            sb.append(']');
+        }
+            sb.append('}');
+
+
+        return  sb.toString();
     }
 }

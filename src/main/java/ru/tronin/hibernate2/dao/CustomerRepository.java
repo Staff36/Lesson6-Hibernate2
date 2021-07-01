@@ -84,35 +84,30 @@ public class CustomerRepository implements Idao<Customer, Long>{
             query.setParameter("customers_id", customer.getId());
             query.executeUpdate();
         } );
-
     }
 
-    public void orderNewProduct(Customer customer, Product product){
+    public void initializeProductList(Customer customer){
         try(Session session = sessionFactory.openSession()){
             session.getTransaction().begin();
-            Set<Product> products = new HashSet<>(getOrderedProductsByCustomerId(customer.getId()));
-            products.add(product);
-            customer.setProducts(products.stream().toList());
-            update(customer);
+            Hibernate.initialize(customer.getProducts());
             session.getTransaction().commit();
         }
     }
 
-    public List<Product> getOrderedProductsWithFixedPricesByCustomerId(Long id){
-        List<Product> products = getOrderedProductsByCustomerId(id);
+
+    public Float getOrderedPrice(Customer customer, Product product) {
+        if (product.getId() == null || customer.getId() == null){
+            return null;
+        }
         try(Session session = sessionFactory.openSession()){
             session.getTransaction().begin();
-            products.forEach(product -> {
                 NativeQuery query = session.createNativeQuery("select u.cost from products_and_customers.customers_products u where customers_id =:customers_id and products_id =:products_id");
-                query.setParameter("customers_id", id);
+                query.setParameter("customers_id", customer.getId());
                 query.setParameter("products_id", product.getId());
                 Double doubleCost = (Double) query.getSingleResult();
                 Float cost = Float.valueOf("" + doubleCost);
-                product.setCost(cost);
-            });
-
             session.getTransaction().commit();
-            return products;
+            return cost;
         }
     }
 }

@@ -34,11 +34,20 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
+        StringBuilder sb = new StringBuilder("Product{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", cost=" + cost +
-                '}';
+                ", cost=" + cost);
+        if(this.customers != null){
+            sb.append("Products[ ");
+            customers.forEach(customer -> {
+                sb.append("Product{id=" + customer.getId() +
+                        ", name='" + customer.getName() + "\'}" );
+            });
+            sb.append(']');
+        }
+        sb.append('}');
+        return  sb.toString();
     }
 }
 
