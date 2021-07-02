@@ -19,7 +19,7 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "customers_products",
             joinColumns = @JoinColumn(name = "customers_id"),
             inverseJoinColumns = @JoinColumn(name = "products_id"))

@@ -41,18 +41,40 @@ public class Lesson6HibernateP2Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        customerService.getAllCustomers().forEach(System.out::println);
-        System.out.println("=====================================================");
-        productService.getAllProducts().forEach(System.out::println);
-        System.out.println("=====================================================");
+        System.out.println("===================All Customers=====================");
+        customerService.getAllCustomers(false).forEach(System.out::println);
+        System.out.println("===================All Products======================");
+        productService.getAllProducts(false).forEach(System.out::println);
+        System.out.println("===================Create============================");
         Customer customer =  new Customer("Petrucco");
-        customerService.createCustomer(customer);
         Product product = new Product("Pumpkin", 4.25f);
+        customerService.createCustomer(customer);
         productService.createProduct(product);
         customer = customerService.getCustomerByName(customer.getName(), true);
-        product = productService.getProductById(1L, false);
+        product = productService.getProductByName("Pumpkin", false);
+        System.out.println(customer);
+        System.out.println(product);
+        System.out.println("==================Order product(Update)==============");
         customerService.orderNewProduct(customer,product);
         customerService.getOrderedProducts(customer.getName()).forEach(System.out::println);
+        System.out.println("==================Testing fix price=================");
+        Float newCost = 100000f;
+        System.out.println("Updating Cost on " + newCost);
+        product.setCost(newCost);
+        productService.updateProduct(product);
+        System.out.println("Product from order");
+        System.out.println(customerService.getOrderedPriceByCustomerAndProduct(customer, product));
+        System.out.println("Product from base:");
+        System.out.println(productService.getProductByName("Pumpkin", false));
+        System.out.println("===================Delete============================");
+        System.out.println("Deleting : " + customer);
+        customerService.deleteCustomer(customer);
+        System.out.println("Deleting : " + product);
+        productService.deleteProduct(product);
+        System.out.println("===================All Customers=====================");
+        customerService.getAllCustomers(false).forEach(System.out::println);
+        System.out.println("===================All Products======================");
+        productService.getAllProducts(false).forEach(System.out::println);
 
     }
 }

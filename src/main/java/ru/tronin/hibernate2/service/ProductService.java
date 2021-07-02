@@ -39,7 +39,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public List<Product> getAllProducts(){
-        return productRepository.getAll();
+    public List<Product> getAllProducts(boolean initializeProducts){
+        return productRepository.getAll(initializeProducts);
     }
 }

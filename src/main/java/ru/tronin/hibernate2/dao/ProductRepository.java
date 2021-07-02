@@ -6,10 +6,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import ru.tronin.hibernate2.model.Customer;
 import ru.tronin.hibernate2.model.Product;
 
-import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -69,26 +67,26 @@ public class ProductRepository implements Idao<Product, Long, String>{
     public void delete(Product product) {
         try(Session session = sessionFactory.openSession()){
             session.getTransaction().begin();
+            session.createNativeQuery("delete from products_and_customers.customers_products " +
+                    "where products_id = :products_id")
+                    .setParameter("products_id", product.getId())
+                    .executeUpdate();
             session.delete(product);
             session.getTransaction().commit();
         }
     }
 
     @Override
-    public List<Product> getAll() {
+    public List<Product> getAll(boolean initializeCustomers) {
         try(Session session = sessionFactory.openSession()){
             session.getTransaction().begin();
             List<Product> products = session.createQuery("from Product").getResultList();
+            if (initializeCustomers) {
+                products.forEach(product -> Hibernate.initialize(product.getCustomers()));
+            }
             session.getTransaction().commit();
             return products;
         }
     }
 
-    public void initializeCustomersList(Product product){
-        try(Session session = sessionFactory.openSession()){
-            session.getTransaction().begin();
-            Hibernate.initialize(product.getCustomers());
-            session.getTransaction().commit();
-        }
-    }
 }
