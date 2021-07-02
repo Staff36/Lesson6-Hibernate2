@@ -1,5 +1,6 @@
 package ru.tronin.hibernate2.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,14 +40,14 @@ public class Product {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", cost=" + cost);
-        if(this.customers != null){
-            sb.append("Products[ ");
-            customers.forEach(customer -> {
-                sb.append("Product{id=" + customer.getId() +
-                        ", name='" + customer.getName() + "\'}" );
-            });
-            sb.append(']');
-        }
+//        if(this.customers != null){
+//            sb.append("Products[ ");
+//            customers.forEach(customer -> {
+//                sb.append("Product{id=" + customer.getId() +
+//                        ", name='" + customer.getName() + "\'}" );
+//            });
+//            sb.append(']');
+//        }
         sb.append('}');
         return  sb.toString();
     }
