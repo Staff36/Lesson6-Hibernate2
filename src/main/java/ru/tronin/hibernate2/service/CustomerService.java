@@ -59,8 +59,8 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
-    public List<Customer> getAllCustomers(){
-        return customerRepository.getAll();
+    public List<Customer> getAllCustomers(boolean initializeCustomers){
+        return customerRepository.getAll(initializeCustomers);
     }
 
     public Customer getCustomerByName(String name, boolean initializeProducts) {

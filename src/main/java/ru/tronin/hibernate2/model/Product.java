@@ -20,7 +20,7 @@ public class Product {
     private Long id;
     private String name;
     private Float cost;
-    @ManyToMany(mappedBy = "products")
+    @ManyToMany(mappedBy = "products", cascade = CascadeType.REMOVE)
     private List<Customer> customers;
 
     public Product(String name, Float cost) {

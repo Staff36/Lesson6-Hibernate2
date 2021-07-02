@@ -4,18 +4,13 @@ import lombok.Data;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.tronin.hibernate2.model.Customer;
 import ru.tronin.hibernate2.model.Product;
-
-import org.hibernate.query.Query;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Repository
 @Data
@@ -35,10 +30,13 @@ public class CustomerRepository implements Idao<Customer, Long, String>{
     }
 
     @Override
-    public List<Customer> getAll() {
+    public List<Customer> getAll(boolean initializeProducts) {
         try(Session session = sessionFactory.openSession()){
             session.getTransaction().begin();
             List<Customer> customers = session.createQuery("from Customer").getResultList();
+            if (initializeProducts){
+            customers.forEach(customer -> Hibernate.initialize(customer.getProducts()));
+            }
             session.getTransaction().commit();
             return customers;
         }
@@ -87,6 +85,9 @@ public class CustomerRepository implements Idao<Customer, Long, String>{
     public void delete(Customer customer) {
         try(Session session = sessionFactory.openSession()){
             session.getTransaction().begin();
+            session.createNativeQuery("delete from products_and_customers.customers_products " +
+                    "where customers_id = :customers_id")
+                    .setParameter("customers_id", customer.getId()).executeUpdate();
             session.delete(customer);
             session.getTransaction().commit();
         }
@@ -96,18 +97,20 @@ public class CustomerRepository implements Idao<Customer, Long, String>{
         if (customer.getProducts() == null){
             return;
         }
-        try(Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.openSession()){
+            session.getTransaction().begin();
             NativeQuery query;
             for (Product product : customer.getProducts()) {
-                query = session.createNativeQuery("update products_and_customers.customers_products set cost =:cost where products_id =:products_id and customers_id =:customers_id");
-                query.setParameter("cost", product.getCost());
-                query.setParameter("products_id", product.getId());
-                query.setParameter("customers_id", customer.getId());
-                query.executeUpdate();
+                 session.createNativeQuery("UPDATE products_and_customers.customers_products " +
+                         "SET cost = :cost " +
+                         "WHERE products_id = :products_id " +
+                         "AND customers_id = :customers_id")
+                        .setParameter("cost", product.getCost())
+                        .setParameter("products_id", product.getId())
+                        .setParameter("customers_id", customer.getId())
+                        .executeUpdate();
             }
-            customer.getProducts().forEach(product -> {
-
-            });
+            session.getTransaction().commit();
         }
     }
 
@@ -118,7 +121,10 @@ public class CustomerRepository implements Idao<Customer, Long, String>{
         }
         try(Session session = sessionFactory.openSession()){
             session.getTransaction().begin();
-                NativeQuery query = session.createNativeQuery("select u.cost from products_and_customers.customers_products u where customers_id =:customers_id and products_id =:products_id");
+                NativeQuery query = session.createNativeQuery("select u.cost " +
+                        "from products_and_customers.customers_products u " +
+                        "where customers_id = :customers_id " +
+                        "and products_id = :products_id");
                 query.setParameter("customers_id", customer.getId());
                 query.setParameter("products_id", product.getId());
                 Double doubleCost = (Double) query.getSingleResult();

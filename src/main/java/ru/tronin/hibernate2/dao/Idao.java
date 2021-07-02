@@ -7,7 +7,7 @@ public interface Idao <E,I,S>{
     E getById(I id, boolean initialize);
     void update(E e);
     void delete(E e);
-    List<E> getAll();
+    List<E> getAll(boolean initialize);
     E getByName(S name, boolean initialize);
 
 }
